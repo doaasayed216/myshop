@@ -1,4 +1,4 @@
-<x-bootstrap>
+<x-bootstrap title="Verify Email">
     <div class="w-1/3 border border-gray-200 rounded-xl shadow-xl mx-auto mt-40 p-8">
         <h1 class="text-xl font-bold mb-6">Enter the code from your email</h1>
         <p class="mb-5">Let us know that this email address belongs to you. Click the link we sent to yout email address {{auth()->user()->email}}</p>

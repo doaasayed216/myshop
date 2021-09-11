@@ -1,6 +1,4 @@
-<x-bootstrap>
-    <form method="POST" action="/logout">
-        @csrf
-        <button>Log out</button>
-    </form>
+<x-bootstrap title="Home">
+    <x-nav/>
+
 </x-bootstrap>

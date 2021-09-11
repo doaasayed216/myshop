@@ -1,8 +1,11 @@
 <?php
 
 use App\Http\Controllers\EmailController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PasswordController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UserController;
+use App\Models\User;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
@@ -50,6 +53,17 @@ Route::middleware(['auth'])->group(function () {
             ->middleware('signed')->name('verify');
         Route::post('/email/verification-notification', [EmailController::class,'resend'])
             ->middleware('throttle:6,1')->name('send');
+    });
+
+    Route::middleware(['admin', 'verified'])->group(function () {
+        Route::prefix('/admin')->group(function (){
+            Route::get('', function (){ return view('admin.dashboard');});
+            Route::get('/product/create', [ProductController::class, 'create']);
+            Route::get('/products', [ProductController::class, 'index']);
+            Route::get('/user/create', [UserController::class, 'create']);
+            Route::get('/users', [UserController::class, 'index']);
+            Route::get('/orders', [OrderController::class, 'index']);
+        });
     });
 });
 

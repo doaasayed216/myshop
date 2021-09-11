@@ -11,6 +11,16 @@ use Illuminate\Validation\ValidationException;
 
 class UserController extends Controller
 {
+    public function index()
+    {
+        return view('admin.users.index', ['users' => User::all()]);
+    }
+
+    public function create()
+    {
+        return view('admin.users.create');
+    }
+
     public function createRegister()
     {
         return view('register');
@@ -50,6 +60,8 @@ class UserController extends Controller
         if(auth()->attempt($credenials, $request->remember))
         {
             session()->regenerate();
+            if(auth()->user()->isAdmin)
+                return redirect('/admin');
             return redirect('/');
         }
 
