@@ -33,9 +33,5 @@ class AppServiceProvider extends ServiceProvider
             return $user->isAdmin;
         });
 
-        Gate::define('add-product', function (User $user){
-            return $user->isAdmin;
-        });
-
     }
 }

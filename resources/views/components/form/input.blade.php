@@ -3,9 +3,9 @@
     <x-form.error :name="$name"/>
     <input
         type="{{$type}}"
-        class="block border border-grey-light w-full p-3 rounded mb-4"
+        class="block border border-grey-light p-3 rounded mb-4 {{$type == 'file' ? 'inline float-left border-none' : 'w-full'}}"
         name="{{$name}}"
         placeholder="{{$placeholder}}"
-        value="{{old($name)}}"
-        required autocomplete="off"/>
+        {{$attributes(['value' => old($name)])}}
+        autocomplete="off"/>
 </div>

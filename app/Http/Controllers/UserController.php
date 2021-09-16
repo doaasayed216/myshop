@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
@@ -13,23 +14,14 @@ class UserController extends Controller
 {
     public function index()
     {
-        return view('admin.users.index', ['users' => User::all()]);
+        return view('admin.users.index', [
+            'users' => User::paginate(10)
+        ]);
     }
 
     public function create()
     {
         return view('admin.users.create');
-    }
-
-    public function createRegister()
-    {
-        return view('register');
-
-    }
-
-    public function createLogin()
-    {
-        return view('login');
     }
 
     public function store(Request $request)
@@ -38,40 +30,49 @@ class UserController extends Controller
             'name' => ['required'],
             'email' => ['required', 'email', Rule::unique('users', 'email')],
             'password' => ['required', 'min:8', 'confirmed'],
-            'password_confirmation' => ['required']
+            'password_confirmation' => ['required'],
+            'isAdmin' => ['required']
         ]);
 
         $user = User::create($attributes);
 
-        Auth::login($user);
-
-        event(new Registered($user));
-
-        return redirect()->route('verification.notice');
-    }
-
-    public function authenticate(Request $request)
-    {
-        $credenials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required']
-        ]);
-
-        if(auth()->attempt($credenials, $request->remember))
+        if($request->get('isAdmin') == 1)
         {
-            session()->regenerate();
-            if(auth()->user()->isAdmin)
-                return redirect('/admin');
-            return redirect('/');
+            $user->isAdmin = true;
         }
 
-        throw ValidationException::withMessages(['email' => 'Invalid email or password']);
+        $user->save();
+        return back();
     }
 
-    public function logout()
+    public function edit(User $user)
     {
-        auth()->logout();
-        return redirect('login');
+        return view('admin.users.edit', ['user' => $user]);
     }
 
+    public function update(User $user)
+    {
+        $attributes = request()->validate([
+            'name' => ['required'],
+            'email' => ['required'],
+            'isAdmin' => ['required']
+        ]);
+
+        $user->update($attributes);
+
+        if(request()->get('isAdmin') == 1)
+        {
+           $user->isAdmin = true;
+           $user->save();
+        }
+
+
+        return back();
+    }
+
+    public function destroy(User $user)
+    {
+        $user->delete();
+        return back();
+    }
 }

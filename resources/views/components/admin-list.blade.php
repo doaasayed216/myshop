@@ -19,6 +19,13 @@
                             </ul>
                         </x-dropdown>
 
+                        <x-dropdown name="Categories" controls="categoriesCollapse" icon="users.png">
+                            <ul class="collapse" id="categoriesCollapse">
+                                <x-dropdown-item name="Add" icon="add.png" href="/admin/category/create"/>
+                                <x-dropdown-item name="View" icon="view.png" href="/admin/categories"/>
+                            </ul>
+                        </x-dropdown>
+
                         <li><a href="/admin/orders" class="flex items-center px-4 py-2 text-gray-600 transition-transform transform rounded-md hover:translate-x-1 focus:ring focus:outline-none">
                                 <span><img src="/images/orders.png" width="20" height="20"></span>
                                 <span class="ml-2 font-medium">Orders</span></a></li>

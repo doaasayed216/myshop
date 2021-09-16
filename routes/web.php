@@ -1,9 +1,12 @@
 <?php
 
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\EmailController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PasswordController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\SessionsController;
 use App\Http\Controllers\UserController;
 use App\Models\User;
 use Illuminate\Auth\Events\PasswordReset;
@@ -30,10 +33,10 @@ Route::get('/', function () {
 
 
 Route::middleware(['guest'])->group(function () {
-    Route::get('register', [UserController::class, 'createRegister']);
-    Route::get('login', [UserController::class, 'createLogin'])->name('login');
-    Route::post('register', [UserController::class, 'store']);
-    Route::post('login', [UserController::class, 'authenticate']);
+    Route::get('register', [RegisterController::class, 'create']);
+    Route::get('login', [SessionsController::class, 'create'])->name('login');
+    Route::post('register', [RegisterController::class, 'store']);
+    Route::post('login', [SessionsController::class, 'authenticate']);
 
     Route::as('password.')->group(function () {
         Route::get('forgot-password', [PasswordController::class,'index'])->name('request');
@@ -45,7 +48,7 @@ Route::middleware(['guest'])->group(function () {
 
 
 Route::middleware(['auth'])->group(function () {
-    Route::post('logout', [UserController::class, 'logout']);
+    Route::post('logout', [SessionsController::class, 'logout']);
 
     Route::as('verification.')->group(function () {
         Route::get('/email/verify', [EmailController::class,'index'])->name('notice');
@@ -62,7 +65,24 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/products', [ProductController::class, 'index']);
             Route::get('/user/create', [UserController::class, 'create']);
             Route::get('/users', [UserController::class, 'index']);
+            Route::get('/category/create', [CategoryController::class, 'create']);
+            Route::get('/categories', [CategoryController::class, 'index']);
             Route::get('/orders', [OrderController::class, 'index']);
+            Route::post('/user/create', [UserController::class, 'store']);
+            Route::post('/product/create', [ProductController::class, 'store']);
+            Route::post('/category/create', [CategoryController::class, 'store']);
+            Route::get('/{category}/sub-category', [CategoryController::class,'add']);
+            Route::post('/{category}/sub-category', [CategoryController::class, 'storeChild']);
+            Route::get('/categories/{category}/edit', [CategoryController::class, 'edit']);
+            Route::patch('/categories/{category}', [CategoryController::class, 'update']);
+            Route::delete('/categories/{category}', [CategoryController::class, 'destroy']);
+            Route::get('/users/{user}/edit', [UserController::class, 'edit']);
+            Route::patch('/users/{user}', [UserController::class, 'update']);
+            Route::delete('/users/{user}', [UserController::class, 'destroy']);
+            Route::get('/products/{product}/edit', [ProductController::class, 'edit']);
+            Route::patch('/products/{product}', [ProductController::class, 'update']);
+            Route::delete('/products/{product}', [ProductController::class, 'destroy']);
+
         });
     });
 });
