@@ -3,6 +3,13 @@
     <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
         <div class="py-2 align-middle inline-block w-3/4 sm:px-6 lg:px-8 ml-10 mt-10">
             <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+                <form method="get" action="">
+                    <select>
+                        @foreach($categories as $category)
+                            <option value="{{$category->id}}">{{$category->name}}</option>
+                        @endforeach
+                    </select>
+                </form>
                 <table class="w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                     <tr>

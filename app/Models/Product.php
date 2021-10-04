@@ -15,4 +15,19 @@ class Product extends Model
     {
         return $this->belongsTo(Category::class);
     }
+
+    public function carts()
+    {
+        return $this->belongsToMany(Cart::class)->withPivot('quantity');
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    public function scopeFilter()
+    {
+
+    }
 }

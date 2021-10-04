@@ -34,6 +34,7 @@ class SessionsController extends Controller
     public function logout()
     {
         auth()->logout();
+        session()->invalidate();
         return redirect('login');
     }
 }

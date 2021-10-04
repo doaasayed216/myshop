@@ -1,13 +1,21 @@
 <?php
 
+use App\Http\Controllers\AddressController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\EmailController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\OrderInfoController;
 use App\Http\Controllers\PasswordController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\SessionsController;
+use App\Http\Controllers\ShoppingSessionController;
 use App\Http\Controllers\UserController;
+use App\Jobs\ReconcileAccount;
+use App\Models\Category;
 use App\Models\User;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -16,6 +24,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
+use Laravel\Socialite\Facades\Socialite;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,8 +37,17 @@ use Illuminate\Support\Str;
 |
 */
 Route::get('/', function () {
-    return view('welcome');
+    return view('welcome', [
+        'categories' => Category::all()
+    ]);
 })->middleware(['auth', 'verified']);
+
+//Route::get('/', function () {
+//    $user = User::first();
+//    ReconcileAccount::dispatch($user);
+//
+//   return 'Finished';
+//});
 
 
 Route::middleware(['guest'])->group(function () {
@@ -37,6 +55,7 @@ Route::middleware(['guest'])->group(function () {
     Route::get('login', [SessionsController::class, 'create'])->name('login');
     Route::post('register', [RegisterController::class, 'store']);
     Route::post('login', [SessionsController::class, 'authenticate']);
+
 
     Route::as('password.')->group(function () {
         Route::get('forgot-password', [PasswordController::class,'index'])->name('request');
@@ -48,7 +67,26 @@ Route::middleware(['guest'])->group(function () {
 
 
 Route::middleware(['auth'])->group(function () {
-    Route::post('logout', [SessionsController::class, 'logout']);
+    Route::post('/logout', [SessionsController::class, 'logout']);
+    Route::get('/categories/{category}', [CategoryController::class, 'show']);
+    Route::get('/cart', [CartController::class, 'create']);
+    Route::post('/cart/add/{product}', [CartController::class, 'store']);
+    Route::delete('/cart/remove/{product}', [CartController::class, 'delete']);
+    Route::get('/address', [AddressController::class, 'create']);
+    Route::post('/address/save', [AddressController::class, 'store']);
+    Route::get('/payment', [PaymentController::class, 'create']);
+    Route::post('/payment/save', [PaymentController::class, 'store'])->name('payment_save');
+    Route::get('/success', [OrderController::class, 'create']);
+    Route::post('/place/order', [OrderController::class, 'store']);
+    Route::delete('/addresses/{address}', [AddressController::class, 'destroy']);
+    Route::get('/addresses/{address}/edit', [AddressController::class, 'edit']);
+    Route::patch('/addresses/{address}', [AddressController::class, 'update']);
+    Route::post('/select/shipping', [ShoppingSessionController::class, 'storeShipping']);
+    Route::post('/select/address', [ShoppingSessionController::class, 'storeAddress']);
+    Route::view('/my-orders', 'my-orders');
+    Route::delete('/orders/{order}', [OrderController::class, 'destroy']);
+    Route::get('/product/{product}', [ProductController::class, 'show']);
+    Route::post('/add/review', [ReviewController::class, 'store']);
 
     Route::as('verification.')->group(function () {
         Route::get('/email/verify', [EmailController::class,'index'])->name('notice');
@@ -82,6 +120,8 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/products/{product}/edit', [ProductController::class, 'edit']);
             Route::patch('/products/{product}', [ProductController::class, 'update']);
             Route::delete('/products/{product}', [ProductController::class, 'destroy']);
+            Route::patch('/orders/{order}', [OrderController::class, 'update']);
+
 
         });
     });

@@ -46,4 +46,29 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         $this->attributes['password'] = bcrypt($password);
     }
+
+    public function cart()
+    {
+        return $this->hasOne(Cart::class);
+    }
+
+    public function addresses()
+    {
+        return $this->hasMany(Address::class);
+    }
+
+    public function payment()
+    {
+        return $this->hasOne(Payment::class);
+    }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
 }

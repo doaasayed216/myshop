@@ -37,6 +37,13 @@ class ProductController extends Controller
         return back();
     }
 
+    public function show(Product $product)
+    {
+        return view('product', [
+            'product' => $product
+        ]);
+    }
+
     public function edit(Product $product)
     {
         return view('admin.products.edit', [

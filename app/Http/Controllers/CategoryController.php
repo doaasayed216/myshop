@@ -46,4 +46,12 @@ class CategoryController extends Controller
 
         return back();
     }
+
+    public function show(Category $category)
+    {
+        return view('categories.show', [
+            'products' => $category->products,
+            'category' => $category
+        ]);
+    }
 }

@@ -14,6 +14,7 @@
                         Forgotten Password?
                     </a>
                 </div>
+                <a href="/login/github">Login with github</a>
             </form>
         </div>
         <div class="text-grey-dark mt-6">
