@@ -1,9 +1,9 @@
-<x-admin-list />
-<div class="w-1/2 mt-8 ml-12 inline-block p-8 mx-auto border border-gray-200 rounded-xl shadow-l">
+<x-admin-list >
+<div class="h-1/2 w-3/5 p-4 border border-gray-200 rounded-xl shadow-l bg-white mt-10 mb-10 mx-auto">
     <form method="POST" action="/admin/products/{{$product->id}}" class="" enctype="multipart/form-data">
         @csrf
         @method('PATCH')
-        <h1 class="text-xl font-bold mb-5">Edit product</h1>
+        <h1 class="text-xl font-bold mb-5 text-gray-600">Edit product</h1>
         <div>
             <x-form.error name="category_id"/>
             <label for="category" class="mr-2">Category </label>
@@ -23,3 +23,4 @@
         <x-form.button name="Update"/>
     </form>
 </div>
+</x-admin-list>

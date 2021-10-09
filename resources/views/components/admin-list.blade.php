@@ -1,52 +1,40 @@
-<x-sidebar title="Admin Panel">
-    <ul class="max-h-full p-2 space-y-1 overflow-y-auto divide-y divide-blue-300">
-        <x-dropdown name="Users" controls="usersCollapse" icon="users.png">
-            <ul class="collapse" id="usersCollapse">
-                <x-dropdown-item name="Add" icon="add.png" href="/admin/user/create"/>
-                <x-dropdown-item name="View" icon="view.png" href="/admin/users"/>
-            </ul>
-        </x-dropdown>
-
-        <x-dropdown name="Products" controls="productsCollapse" icon="products.png">
-            <ul class="collapse" id="productsCollapse">
-                <x-dropdown-item name="Add" icon="add.png" href="/admin/product/create"/>
-                <x-dropdown-item name="View" icon="view.png" href="/admin/products"/>
-            </ul>
-        </x-dropdown>
-
-        <x-dropdown name="Categories" controls="categoriesCollapse" icon="users.png">
-            <ul class="collapse" id="categoriesCollapse">
-                <x-dropdown-item name="Add" icon="add.png" href="/admin/category/create"/>
-                <x-dropdown-item name="View" icon="view.png" href="/admin/categories"/>
-            </ul>
-        </x-dropdown>
-
-        <li><a href="/admin/orders" class="flex items-center px-4 py-2 text-gray-600 transition-transform transform rounded-md hover:translate-x-1 focus:ring focus:outline-none">
-                <span><img src="/images/orders.png" width="20" height="20"></span>
-                <span class="ml-2 font-medium">Orders</span></a></li>
-
-        <li><a href="" class="flex items-center px-4 py-2 text-gray-600 transition-transform transform rounded-md hover:translate-x-1 focus:ring focus:outline-none">
-                                <span><img class="h-8 w-8 rounded-full"
-                                           src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                                           alt="" width="20" height="20"></span>
-                <span class="ml-2 font-medium">Profile</span></a></li>
-
-        <li><a href="#" class="flex items-center px-4 py-2 text-gray-600 transition-transform transform rounded-md hover:translate-x-1 focus:ring focus:outline-none">
-                <span><img src="/images/settings.png" width="20" height="20"></span>
-                <span class="ml-2 font-medium">Settings</span></a></li>
-
-    </ul>
-    <div class="flex-shrink-0 px-4 py-2">
-        <form method="POST" action="/logout">
-            @csrf
-            <button
-                class="w-full bg-gray-900 px-4 py-2 text-lg font-medium text-center text-gray-100 transition-transform transform rounded-md hover:scale-105 neumorphism-shadow focus:outline-none focus:ring"
-            >
-                Sign out
+<x-admin-bootstrap>
+    <div @click.away="open = false" class="flex flex-col w-full md:w-64 text-gray-700 bg-white dark-mode:text-gray-200 dark-mode:bg-gray-800 flex-shrink-0" x-data="{ open: false }">
+        <div class="flex-shrink-0 px-8 py-4 flex flex-row items-center justify-between">
+            <a href="#" class="text-lg font-semibold tracking-widest text-gray-900 uppercase rounded-lg dark-mode:text-white focus:outline-none focus:shadow-outline">Admin Panel</a>
+            <button class="rounded-lg md:hidden rounded-lg focus:outline-none focus:shadow-outline" @click="open = !open">
+                <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
+                    <path x-show="!open" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+                    <path x-show="open" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                </svg>
             </button>
-        </form>
+        </div>
+        <nav :class="{'block': open, 'hidden': !open}" class="flex-grow md:block px-4 pb-4 md:pb-0 md:overflow-y-auto">
+            @can('viewAny', \App\Models\Role::class)
+                <x-dropdown name="Roles" href="/admin/roles" icon="role.png"/>
+            @endcan
+            @can('viewAny', \App\Models\User::class)
+                <x-dropdown name="Users" href="/admin/users" icon="users.png"/>
+            @endcan
+            @can('viewAny', \App\Models\Category::class)
+                <x-dropdown name="Categories" href="/admin/categories" icon="categories.png" />
+            @endcan
+            <x-dropdown name="Products"  href="/admin/products" icon="products.png" />
+            <x-dropdown name="Orders" href="/admin/orders" icon="orders.png" />
 
+            <div class="flex-shrink-0 px-4 py-2">
+                <form method="POST" action="/logout" class="mt-5">
+                    @csrf
+                    <button
+                        class="w-full bg-gray-800 hover:bg-gray-900 px-4 py-2 text-lg font-medium text-center text-white transition-transform transform rounded-md hover:scale-105 neumorphism-shadow focus:outline-none focus:ring"
+                    >
+                        Sign out
+                    </button>
+                </form>
+
+            </div>
+        </nav>
     </div>
-</x-sidebar>
+    {{$slot}}
 
-
+</x-admin-bootstrap>

@@ -26,4 +26,12 @@ class Order extends Model
         return $this->belongsTo(Address::class);
     }
 
+    public function scopeFilter($query, array $filters)
+    {
+        $query->when($filters['search'] ?? false, function ($query, $search) {
+            $query->where(fn($query) =>
+            $query->where('shipping', 'like', '%' . $search . '%'));
+        });
+    }
+
 }

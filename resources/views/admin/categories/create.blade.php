@@ -1,10 +1,11 @@
-<x-admin-list />
+<x-admin-list >
 
-<div class="w-1/2 mt-8 ml-12 inline-block p-8 mx-auto border border-gray-200 rounded-xl shadow-l">
-    <form method="POST" action="/admin/category/create" class="" enctype="multipart/form-data">
+<div class="h-1/2 w-3/5 p-4 border border-gray-200 rounded-xl shadow-l bg-white mt-10 mb-10 mx-auto">
+    <form method="POST" action="/admin/categories" class="" enctype="multipart/form-data">
         @csrf
-        <h1 class="text-xl font-bold mb-5">Add new Category</h1>
-        <x-form.input type="text" name="name" placeholder="Product name"/>
+        <h1 class="text-xl font-bold mb-5 text-gray-600">Add new Category</h1>
+        <x-form.input type="text" name="name" placeholder="Category name"/>
         <x-form.button name="Add"/>
     </form>
 </div>
+</x-admin-list>

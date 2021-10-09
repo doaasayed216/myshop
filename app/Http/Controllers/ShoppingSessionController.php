@@ -9,12 +9,12 @@ class ShoppingSessionController extends Controller
     public function storeShipping(Request $request)
     {
         $request->session()->put('shipping', $request->input('shipping'));
-        return redirect('/address');
+        return redirect('/addresses/create');
     }
 
     public function storeAddress(Request $request)
     {
         $request->session()->put('address', $request->input('address'));
-        return view('payment');
+        return redirect('/payment/create');
     }
 }

@@ -5,21 +5,27 @@ namespace App\Http\Controllers;
 use App\Models\Address;
 use App\Models\Cart;
 use App\Models\Order;
+use App\Models\Role;
+use App\Policies\OrderPolicy;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
     public function index()
     {
         return view('admin.orders', [
-            'orders' => Order::all()
+            'orders' => auth()->user()->role_id === Role::IS_SELLER ? DB::table('orders')->where('items->user_id', auth()->user()->id)->get()
+                : Order::latest()->filter(request(['search']))->paginate(10)
         ]);
     }
+
     public function create()
     {
-        return view('success', [
+        return view('order-review', [
             'address' => Address::find(session('address'))
         ]);
+
     }
     public function store()
     {
@@ -30,9 +36,12 @@ class OrderController extends Controller
             'shipping' => session('shipping'),
         ]);
 
-        if(session()->has('cash'))
-        {
+        if(session()->has('cash')) {
             $order->cash = true;
+        }
+
+        elseif (session()->has('existing_card')) {
+            $order->payment_id = session('existing_card');
         }
 
         else {
@@ -48,12 +57,12 @@ class OrderController extends Controller
 
         $cart->delete();
 
-        return view('good');
-
+        return view('success');
     }
 
     public function destroy(Order $order)
     {
+        $this->authorize('delete', $order);
         Cart::where('id', $order->cart_id)->restore();
         $order->delete();
         return back();
@@ -61,8 +70,10 @@ class OrderController extends Controller
 
     public function update(Order $order)
     {
+        $this->authorize('update', $order);
         $order->delivered = true;
         $order->save();
+        Cart::where('id', $order->cart_id)->forceDelete();
         return back();
     }
 }

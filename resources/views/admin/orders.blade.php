@@ -1,8 +1,28 @@
-<x-admin-list />
-<div class="flex flex-col">
-    <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-        <div class="py-2 align-middle inline-block w-6/7 sm:px-6 lg:px-8 ml-10 mt-10">
-            <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+<x-admin-list>
+    <div class="h-1/2 w-4/5 p-4 border border-gray-200 rounded-xl shadow-l bg-white mt-10 mb-10 mx-auto">
+        <section class="px-4 sm:px-6 lg:px-4 xl:px-6 pt-4 pb-4 sm:pb-6 lg:pb-4 xl:pb-6 space-y-4">
+            <header class="flex items-center justify-between">
+                <div class="container flex mx-auto">
+                    <div class="flex border-2 rounded">
+                        <button class="flex items-center justify-center px-4 border-r">
+                            <svg class="w-6 h-6 text-gray-600" fill="currentColor" xmlns="http://www.w3.org/2000/svg"
+                                 viewBox="0 0 24 24">
+                                <path
+                                    d="M16.32 14.9l5.39 5.4a1 1 0 0 1-1.42 1.4l-5.38-5.38a8 8 0 1 1 1.41-1.41zM10 16a6 6 0 1 0 0-12 6 6 0 0 0 0 12z">
+                                </path>
+                            </svg>
+                        </button>
+                        <form method="get" action="/admin/orders">
+                            <input type="text"
+                                   name="search"
+                                   placeholder="Search..."
+                                   class="px-4 py-2 w-80"
+                                   value="{{ request('search') }}">
+                        </form>
+                    </div>
+                </div>
+            </header>
+            @
                 <table class="w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                     <tr>
@@ -79,12 +99,8 @@
                         </tr>
 
                     @endforeach
-
-
-                    <!-- More people... -->
                     </tbody>
                 </table>
+        </section>
             </div>
-        </div>
-    </div>
-</div>
+</x-admin-list>

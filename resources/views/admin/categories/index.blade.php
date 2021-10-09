@@ -1,15 +1,34 @@
-<x-admin-list />
-<div class="flex flex-col">
-    <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-        <div class="py-2 align-middle inline-block w-3/4 sm:px-6 lg:px-8 ml-10 mt-10">
-            <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
-                <form method="get" action="">
-                    <select>
-                        @foreach($categories as $category)
-                            <option value="{{$category->id}}">{{$category->name}}</option>
-                        @endforeach
-                    </select>
-                </form>
+<x-admin-list>
+    <div class="h-1/2 w-3/5 p-4 border border-gray-200 rounded-xl shadow-l bg-white mt-10 mb-10 mx-auto">
+        <section class="px-4 sm:px-6 lg:px-4 xl:px-6 pt-4 pb-4 sm:pb-6 lg:pb-4 xl:pb-6 space-y-4">
+            <header class="flex items-center justify-between">
+                <div class="container flex mx-auto">
+                    <div class="flex border-2 rounded">
+                        <button class="flex items-center justify-center px-4 border-r">
+                            <svg class="w-6 h-6 text-gray-600" fill="currentColor" xmlns="http://www.w3.org/2000/svg"
+                                 viewBox="0 0 24 24">
+                                <path
+                                    d="M16.32 14.9l5.39 5.4a1 1 0 0 1-1.42 1.4l-5.38-5.38a8 8 0 1 1 1.41-1.41zM10 16a6 6 0 1 0 0-12 6 6 0 0 0 0 12z">
+                                </path>
+                            </svg>
+                        </button>
+                        <form method="get" action="/admin/categories">
+                            <input type="text"
+                                   name="search"
+                                   placeholder="Search..."
+                                   class="px-4 py-2 w-80"
+                                   value="{{ request('search') }}">
+                        </form>
+                    </div>
+                </div>
+
+                <a href="/admin/categories/create" class="hover:bg-gray-200 hover:text-gray-800 group flex items-center rounded-md bg-gray-100 text-gray-600 text-sm font-medium px-4 py-2">
+                    <svg class="group-hover:text-gray-600 text-gray-500 mr-2" width="12" height="20" fill="currentColor">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M6 5a1 1 0 011 1v3h3a1 1 0 110 2H7v3a1 1 0 11-2 0v-3H2a1 1 0 110-2h3V6a1 1 0 011-1z"/>
+                    </svg>
+                    New
+                </a>
+            </header>
                 <table class="w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                     <tr>
@@ -17,9 +36,6 @@
                             Category
                         </th>
 
-                        <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Category
-                        </th>
 
                         <th scope="col" class="relative px-4 py-3">
                             <span class="sr-only">Edit</span>
@@ -29,45 +45,25 @@
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                     @foreach($categories as $category)
-                        @if(!$category->parent_id)
                         <tr>
                             <td class="px-4 py-4 whitespace-nowrap">
                                     <div class="text-sm text-gray-900">{{$category->name}}</div>
                             </td>
-                            <td class="px-4 py-4 whitespace-nowrap">
-                                @foreach($category->children as $child)
-                                <div class="text-sm text-gray-900">{{$child->name}}</div>
-                                @endforeach
-                            </td>
+
                             <td class="px-4 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                <a href="/admin/{{$category->id}}/sub-category" class="text-indigo-600 mr-5 hover:text-indigo-900">Add Subcategory</a>
-                                <a href="#" class="text-indigo-600 mr-5 hover:text-indigo-900">Edit</a>
-                                <a href="#" class="text-red-600 hover:text-indigo-900">Delete</a>
+                                <a href="/admin/categories/{{$category->id}}/edit" class="text-indigo-600 mr-5 hover:text-indigo-900">Edit</a>
+                                <form method="POST" action="/admin/categories/{{$category->id}}" class="text-red-600 hover:text-red-900 inline-block">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button>Delete</button>
+                                </form>
                             </td>
                         </tr>
-                    @endif
                     @endforeach
-                    {{--                            <td class="px-4 py-4 whitespace-nowrap">--}}
-                    {{--                                <div class="text-sm text-gray-900">{{$user->email}}</div>--}}
-                    {{--                            </td>--}}
-                    {{--                            <td class="px-4 py-4 whitespace-nowrap">--}}
-                    {{--                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">--}}
-                    {{--                  Active--}}
-                    {{--                </span>--}}
-                    {{--                            </td>--}}
-                    {{--                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">--}}
-                    {{--                                {{$user->isAdmin ? 'Admin' : 'Member'}}--}}
-                    {{--                            </td>--}}
-                    {{--
-
-
-                    {{--                    <!-- More people... -->--}}
-                    {{--                    </tbody>--}}
                 </table>
+        </section>
             </div>
-        </div>
         <div class="mt-40">
             {{$categories->links()}}
         </div>
-    </div>
-</div>
+</x-admin-list>

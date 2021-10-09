@@ -25,7 +25,7 @@ class SessionsController extends Controller
             session()->regenerate();
             if(auth()->user()->isAdmin)
                 return redirect('/admin');
-            return redirect('/');
+            return redirect()->intended();
         }
 
         throw ValidationException::withMessages(['email' => 'Invalid email or password']);

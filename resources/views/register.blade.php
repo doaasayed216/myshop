@@ -11,15 +11,6 @@
                 <x-form.input type="password" name="password_confirmation" placeholder="Confirm password" />
                 <x-form.button name="Create Account"/>
 
-                <div class="text-center text-sm text-grey-dark mt-4">
-                    By signing up, you agree to the
-                    <a class="no-underline border-b border-grey-dark text-blue-500" href="#">
-                        Terms of Service
-                    </a> and
-                    <a class="no-underline border-b border-grey-dark text-blue-500" href="#">
-                        Privacy Policy
-                    </a>
-                </div>
         </form>
         </div>
         <div class="text-grey-dark mt-6">

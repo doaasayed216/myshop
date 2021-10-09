@@ -14,21 +14,13 @@ class AddressController extends Controller
 
     public function store(Request $request)
     {
-        $attributes = $request->validate([
-            'phone' => 'required',
-            'details' => 'required',
-            'city' => 'required',
-            'postcode' => 'required'
+        $attributes = array_merge($this->validateAddress($request),[
+            'user_id' => auth()->user()->id
         ]);
 
-        $attributes['user_id'] = auth()->user()->id;
-
         $address = Address::create($attributes);
-
         $request->session()->put('address', $address->id);
-
-        return redirect('/payment');
-
+        return redirect('/payment/create');
     }
 
     public function edit(Address $address)
@@ -36,22 +28,25 @@ class AddressController extends Controller
         return view('address-edit' , ['address' => $address]);
     }
 
-    public function update(Address $address)
+    public function update(Request $request, Address $address)
     {
-        $attrubutes = request()->validate([
-            'phone' => 'required',
-            'details' => 'required',
-            'city' => 'required',
-            'postcode' => 'required'
-        ]);
-
-        $address->update($attrubutes);
-        return redirect('/address');
+        $address->update($this->validateAddress($request));
+        return redirect('/addresses/create');
     }
 
     public function destroy(Address $address)
     {
         $address->delete();
         return back();
+    }
+
+    protected function validateAddress(Request $request)
+    {
+        return $request->validate([
+            'phone' => ['required', 'regex:/(01)[0-9]{9}/', 'size:11'],
+            'details' => ['required'],
+            'city' => ['required', 'string'],
+            'postcode' => ['required', 'numeric']
+        ]);
     }
 }

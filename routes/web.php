@@ -11,11 +11,14 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SessionsController;
 use App\Http\Controllers\ShoppingSessionController;
 use App\Http\Controllers\UserController;
 use App\Jobs\ReconcileAccount;
 use App\Models\Category;
+use App\Models\Product;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -26,28 +29,13 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
-Route::get('/', function () {
-    return view('welcome', [
-        'categories' => Category::all()
-    ]);
-})->middleware(['auth', 'verified']);
 
-//Route::get('/', function () {
-//    $user = User::first();
-//    ReconcileAccount::dispatch($user);
-//
-//   return 'Finished';
-//});
+Route::view('/', 'welcome', [
+    'categories' => Category::all(),
+    'products' => Product::filter(request(['search', 'category', 'price']))->orderByDesc('created_at')->paginate(20)
+]);
+
+Route::get('/products/{product}', [ProductController::class, 'show']);
 
 
 Route::middleware(['guest'])->group(function () {
@@ -55,7 +43,6 @@ Route::middleware(['guest'])->group(function () {
     Route::get('login', [SessionsController::class, 'create'])->name('login');
     Route::post('register', [RegisterController::class, 'store']);
     Route::post('login', [SessionsController::class, 'authenticate']);
-
 
     Route::as('password.')->group(function () {
         Route::get('forgot-password', [PasswordController::class,'index'])->name('request');
@@ -65,65 +52,40 @@ Route::middleware(['guest'])->group(function () {
     });
 });
 
-
-Route::middleware(['auth'])->group(function () {
-    Route::post('/logout', [SessionsController::class, 'logout']);
-    Route::get('/categories/{category}', [CategoryController::class, 'show']);
-    Route::get('/cart', [CartController::class, 'create']);
-    Route::post('/cart/add/{product}', [CartController::class, 'store']);
-    Route::delete('/cart/remove/{product}', [CartController::class, 'delete']);
-    Route::get('/address', [AddressController::class, 'create']);
-    Route::post('/address/save', [AddressController::class, 'store']);
-    Route::get('/payment', [PaymentController::class, 'create']);
-    Route::post('/payment/save', [PaymentController::class, 'store'])->name('payment_save');
-    Route::get('/success', [OrderController::class, 'create']);
-    Route::post('/place/order', [OrderController::class, 'store']);
-    Route::delete('/addresses/{address}', [AddressController::class, 'destroy']);
-    Route::get('/addresses/{address}/edit', [AddressController::class, 'edit']);
-    Route::patch('/addresses/{address}', [AddressController::class, 'update']);
-    Route::post('/select/shipping', [ShoppingSessionController::class, 'storeShipping']);
-    Route::post('/select/address', [ShoppingSessionController::class, 'storeAddress']);
-    Route::view('/my-orders', 'my-orders');
-    Route::delete('/orders/{order}', [OrderController::class, 'destroy']);
-    Route::get('/product/{product}', [ProductController::class, 'show']);
-    Route::post('/add/review', [ReviewController::class, 'store']);
+Route::middleware(['auth', 'prevent-back-history'])->group(function () {
 
     Route::as('verification.')->group(function () {
-        Route::get('/email/verify', [EmailController::class,'index'])->name('notice');
-        Route::get('/email/verify/{id}/{hash}', [EmailController::class,'send'])
+        Route::get('/email/verify', [EmailController::class, 'index'])->name('notice');
+        Route::get('/email/verify/{id}/{hash}', [EmailController::class, 'send'])
             ->middleware('signed')->name('verify');
-        Route::post('/email/verification-notification', [EmailController::class,'resend'])
+        Route::post('/email/verification-notification', [EmailController::class, 'resend'])
             ->middleware('throttle:6,1')->name('send');
     });
 
-    Route::middleware(['admin', 'verified'])->group(function () {
-        Route::prefix('/admin')->group(function (){
-            Route::get('', function (){ return view('admin.dashboard');});
-            Route::get('/product/create', [ProductController::class, 'create']);
-            Route::get('/products', [ProductController::class, 'index']);
-            Route::get('/user/create', [UserController::class, 'create']);
-            Route::get('/users', [UserController::class, 'index']);
-            Route::get('/category/create', [CategoryController::class, 'create']);
-            Route::get('/categories', [CategoryController::class, 'index']);
-            Route::get('/orders', [OrderController::class, 'index']);
-            Route::post('/user/create', [UserController::class, 'store']);
-            Route::post('/product/create', [ProductController::class, 'store']);
-            Route::post('/category/create', [CategoryController::class, 'store']);
-            Route::get('/{category}/sub-category', [CategoryController::class,'add']);
-            Route::post('/{category}/sub-category', [CategoryController::class, 'storeChild']);
-            Route::get('/categories/{category}/edit', [CategoryController::class, 'edit']);
-            Route::patch('/categories/{category}', [CategoryController::class, 'update']);
-            Route::delete('/categories/{category}', [CategoryController::class, 'destroy']);
-            Route::get('/users/{user}/edit', [UserController::class, 'edit']);
-            Route::patch('/users/{user}', [UserController::class, 'update']);
-            Route::delete('/users/{user}', [UserController::class, 'destroy']);
-            Route::get('/products/{product}/edit', [ProductController::class, 'edit']);
-            Route::patch('/products/{product}', [ProductController::class, 'update']);
-            Route::delete('/products/{product}', [ProductController::class, 'destroy']);
-            Route::patch('/orders/{order}', [OrderController::class, 'update']);
+    Route::middleware(['verified'])->group(function () {
+        Route::resource('/reviews', ReviewController::class)->only('store' , 'destroy');
+        Route::resource('/addresses', AddressController::class);
+        Route::resource('/payment', PaymentController::class)->only('create', 'store');
+        Route::resource('/order', OrderController::class);
+        Route::post('/logout', [SessionsController::class, 'logout']);
+        Route::get('/cart', [CartController::class, 'index']);
+        Route::post('/cart/{product}', [CartController::class, 'store']);
+        Route::delete('/cart/{product}', [CartController::class, 'destroy']);
+        Route::post('/select/shipping', [ShoppingSessionController::class, 'storeShipping']);
+        Route::post('/select/address', [ShoppingSessionController::class, 'storeAddress']);
+        Route::view('/my-orders', 'my-orders');
 
-
+        Route::middleware(['admin'])->group(function () {
+            Route::prefix('/admin')->group(function () {
+                Route::view('', 'admin.dashboard');
+                Route::resources([
+                    'roles' => RoleController::class,
+                    'users' => UserController::class,
+                    'categories' => CategoryController::class,
+                    'products' => ProductController::class,
+                    'orders' => OrderController::class
+                ]);
+            });
         });
     });
 });
-
