@@ -14,39 +14,32 @@ class CartController extends Controller
         return view('cart');
     }
 
-    public function store(Product $product)
+    public function store(Request $request, Product $product)
     {
-        if(!Auth::check()){
-            return redirect('/login');
-        }
-
-        $user = auth()->user();
-        $cart = $user->cart;
-        if(!$cart)
-        {
-            $cart = new Cart;
-            $cart->user_id = auth()->user()->id;
-            $cart->save();
-        }
-
-        $input = request()->validate(['quantity' => 'required|numeric']);
-
+        $cart = auth()->user()->cart ?? Cart::create(['user_id' => auth()->id()]);
+        $input = $request->validate(['quantity' => 'required|numeric']);
         $cart->products()->attach($product->id, ['quantity' => $input['quantity']]);
-
-        $cart->total_price += $product->price * $input['quantity'];
-
-        $cart->save();
-
+        $cart->update([
+            'total_price' => $cart->total_price += $product->price * $input['quantity']
+        ]);
         return back();
-
     }
 
     public function destroy(Product $product)
     {
         $cart = auth()->user()->cart;
+        $quantity = $cart->getProduct($product->id)->pivot->quantity;
+
         $cart->products()->detach($product->id);
-        $cart->total_price -= $product->price * request()->input('quantity');
-        $cart->products->count() ? $cart->save() : Cart::where('id', $cart->id)->forceDelete();
+
+        if(!$cart->products()->count()) {
+            Cart::where('id', $cart->id)->forceDelete();
+            return back();
+        }
+
+        $cart->update([
+            'total_price' => $cart->total_price -= $product->price * $quantity
+        ]);
         return back();
     }
 }

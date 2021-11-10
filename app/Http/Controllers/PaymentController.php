@@ -20,35 +20,26 @@ class PaymentController extends Controller
     public function store(Request $request)
     {
         if($request->cash) {
+            session()->forget('payment');
             $request->session()->put('cash', true);
         }
 
-        elseif ($request->existing_card) {
-            if($request->session()->has('cash')) {
-                $request->session()->forget('cash');
-            }
-            $payment_id = Payment::where('user_id', $request->user()->id)->get('id');
-            $request->session()->put('existing_card', $payment_id);
+        elseif($request->payment) {
+            session()->forget('cash');
+            session()->put('payment', $request->payment);
         }
 
-        else{
-            if($request->session()->has('cash')) {
-                $request->session()->forget('cash');
-            }
-
-            if($request->session()->has('existing_card')) {
-                $request->session()->forget('existing_card');
-            }
-
+        else {
+            session()->forget(['cash', 'payment']);
             $attributes = $request->validate([
-                'user_id' => ['required', Rule::unique('payments', 'user_id')],
+                'user_id' => ['required', Rule::exists('users', 'id')],
                 'card_number' => ['required', Rule::unique('payments', 'card_number'), new CardNumber],
                 'expiration_year' => ['required', new CardExpirationYear($request->get('expiration_month'))],
                 'expiration_month' => ['required', new CardExpirationMonth($request->get('expiration_year'))],
                 'cvc' => ['required', new CardCvc($request->get('card_number'))]
             ]);
 
-            Payment::create($attributes);
+            Payment::updateOrCreate(['user_id' => auth()->id()], $attributes);
         }
 
         return redirect('/order/create');

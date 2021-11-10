@@ -5,13 +5,12 @@
             <h1 class="mb-8 text-3xl text-center">Sign up</h1>
             <form method="POST" action="/register">
                 @csrf
-                <x-form.input type="text" name="name" placeholder="Full name" />
-                <x-form.input type="text" name="email" placeholder="Email" />
-                <x-form.input type="password" name="password" placeholder="Password" />
-                <x-form.input type="password" name="password_confirmation" placeholder="Confirm password" />
+                <x-form.input type="text" name="name" placeholder="Full name" required/>
+                <x-form.input type="email" name="email" placeholder="Email" required/>
+                <x-form.input type="password" name="password" placeholder="Password" required/>
+                <x-form.input type="password" name="password_confirmation" placeholder="Confirm password" required/>
                 <x-form.button name="Create Account"/>
-
-        </form>
+            </form>
         </div>
         <div class="text-grey-dark mt-6">
             Already have an account?
@@ -21,5 +20,4 @@
         </div>
     </div>
 </div>
-
 </x-bootstrap>>

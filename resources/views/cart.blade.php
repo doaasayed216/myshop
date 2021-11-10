@@ -3,8 +3,8 @@
     @auth
     @if(auth()->user()->cart)
         <div class="container mx-auto mt-10">
-            <div class="flex shadow-md my-10">
-                <div class="w-3/4 bg-white px-10 py-10">
+            <div class="lg:flex shadow-md my-10">
+                <div class="w-full lg:w-3/4 bg-white px-10 py-10">
                     <div class="flex justify-between border-b pb-8">
                         <h1 class="font-semibold text-2xl">Shopping Cart</h1>
                         <h2 class="font-semibold text-2xl">{{count(auth()->user()->cart->products) . ' Items'}}</h2>
@@ -22,11 +22,10 @@
                                     <img class="h-24" src="{{asset('storage/'. $product->img_path)}}" alt="" width="100">
                                 </div>
                                 <div class="flex flex-col justify-between ml-4 flex-grow">
-                                    <span class="font-bold text-sm">{{$product->name}}</span>
+                                    <span class="font-bold text-sm">{{Illuminate\Support\Str::limit($product->name, 10)}}</span>
                                     <form method="POST" action="/cart/{{$product->id}}">
                                         @csrf
                                         @method('delete')
-                                        <input type="hidden" name="quantity" value="{{$product->pivot->quantity}}">
                                         <button class="font-semibold hover:text-red-500 text-gray-500 text-xs">Remove</button>
                                     </form>
                                 </div>
@@ -34,8 +33,8 @@
                             <div class="flex justify-center w-1/5">
                                 <span class="mx-2 border text-center w-8"> {{$product->pivot->quantity}}</span>
                             </div>
-                            <span class="text-center w-1/5 font-semibold text-sm">{{$product->price . ' EGP'}}</span>
-                            <span class="text-center w-1/5 font-semibold text-sm">{{$product->price * $product->pivot->quantity . ' EGP'}}</span>
+                            <span class="text-center w-1/5 font-semibold text-sm">{{$product->price}}</span>
+                            <span class="text-center w-1/5 font-semibold text-sm">{{$product->price * $product->pivot->quantity}}</span>
                         </div>
                     @endforeach
                     <a href="/" class="flex font-semibold text-indigo-600 text-sm mt-10">
@@ -43,7 +42,7 @@
                         Continue Shopping
                     </a>
                 </div>
-                <div id="summary" class="w-1/4 px-8 py-10">
+                <div id="summary" class="w-full lg:w-1/4 px-8 py-10">
                     <h1 class="font-semibold text-2xl border-b pb-8">Order Summary</h1>
                     <div class="flex justify-between mt-10 mb-5">
                         <span class="font-semibold text-sm uppercase">{{count(auth()->user()->cart->products) . ' Items'}}</span>
@@ -60,11 +59,11 @@
                                 <option value="21">Faster shipping - $21.00</option>
                             </select>
                         </div>
-                        <div class="py-10">
-                            <label for="promo" class="font-semibold inline-block mb-3 text-sm uppercase">Promo Code</label>
-                            <input type="text" id="promo" placeholder="Enter your code" class="p-2 text-sm w-full">
-                        </div>
-                        <button class="bg-red-500 hover:bg-red-600 px-5 py-2 text-sm text-white uppercase">Apply</button>
+{{--                        <div class="py-10">--}}
+{{--                            <label for="promo" class="font-semibold inline-block mb-3 text-sm uppercase">Promo Code</label>--}}
+{{--                            <input type="text" id="promo" placeholder="Enter your code" class="p-2 text-sm w-full">--}}
+{{--                        </div>--}}
+{{--                        <button class="bg-red-500 hover:bg-red-600 px-5 py-2 text-sm text-white uppercase">Apply</button>--}}
                         <div class="border-t mt-8">
                             <button class="bg-gray-800 hover:bg-gray-900 font-semibold py-3 text-sm text-white uppercase w-full">Proceed</button>
                         </div>
@@ -73,9 +72,13 @@
             </div>
         </div>
     @else
-        <div class="w-1/2 mx-auto mt-10 items-center justify-items p-10">
-            <img src="/images/bag.png" width="300" height="300" class="mx-auto">
-            <p class="w-1/2 mx-auto pl-5 text-medium font-semibold mt-5">Your cart is empty, <a href="/" class="text-blue-500 mx-auto">continue shopping now</a></p>
+        <div class="flex flex-col w-1/2 mx-auto mt-10 items-center justify-items p-10">
+            <div>
+                <img src="/images/bag.png" width="300" height="300" class="mx-auto">
+            </div>
+            <div>
+                <p class="mx-auto pl-5 text-medium font-semibold mt-5">Your cart is empty, <a href="/" class="text-blue-500 mx-auto">continue shopping now</a></p>
+            </div>
         </div>
     @endif
     @endauth

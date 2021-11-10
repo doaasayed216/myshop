@@ -14,11 +14,9 @@ class AddressController extends Controller
 
     public function store(Request $request)
     {
-        $attributes = array_merge($this->validateAddress($request),[
-            'user_id' => auth()->user()->id
-        ]);
+        $address = auth()->user()->addresses()
+            ->create($this->validateAddress($request));
 
-        $address = Address::create($attributes);
         $request->session()->put('address', $address->id);
         return redirect('/payment/create');
     }

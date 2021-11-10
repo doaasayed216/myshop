@@ -1,5 +1,4 @@
 <x-admin-list >
-<div class="h-1/2 w-3/5 p-4 border border-gray-200 rounded-xl shadow-l bg-white mt-10 mb-10 mx-auto">
     <form method="POST" action="/admin/products/{{$product->id}}" class="" enctype="multipart/form-data">
         @csrf
         @method('PATCH')
@@ -15,12 +14,11 @@
                 @endforeach
             </select>
         </div>
-        <x-form.input type="text" name="name" placeholder="Product name" :value="old('name', $product->name)"/>
-        <x-form.textarea name="description" placeholder="Description">{{old('description', $product->description)}}</x-form.textarea>
-        <x-form.input type="number" name="price" placeholder="Price" :value="old('price', $product->price)"/>
+        <x-form.input type="text" name="name" placeholder="Product name" required :value="old('name', $product->name)"/>
+        <x-form.textarea name="description" placeholder="Description" required>{{old('description', $product->description)}}</x-form.textarea>
+        <x-form.input type="number" name="price" placeholder="Price" required :value="old('price', $product->price)"/>
         <x-form.input type="file" name="img_path" placeholder="" :value="old('img_path', $product->img_path)"/>
         <img src="{{asset('storage/' . $product->img_path)}}" height="100" width="100" class="inline float-right">
         <x-form.button name="Update"/>
     </form>
-</div>
 </x-admin-list>

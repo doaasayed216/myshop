@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Rules\Valid;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -24,12 +25,7 @@ class RegisterController extends Controller
             'password_confirmation' => ['required']
         ]);
 
-        $user = User::create($attributes);
-
-        Auth::login($user);
-
-        event(new Registered($user));
-
-        return redirect()->route('verification.notice');
+        User::create($attributes);
+        return redirect()->route('login');
     }
 }

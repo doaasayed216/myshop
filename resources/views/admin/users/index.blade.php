@@ -1,6 +1,5 @@
 <x-admin-list>
-<div class="h-1/2 w-3/5 p-4 border border-gray-200 rounded-xl shadow-l bg-white mt-10 mb-10 mx-auto">
-    <section class="px-4 sm:px-6 lg:px-4 xl:px-6 pt-4 pb-4 sm:pb-6 lg:pb-4 xl:pb-6 space-y-4">
+    <section class="px-4 sm:px-6 lg:px-4 xl:px-6 pt-4 space-y-4" id="content">
         <header class="flex items-center justify-between">
             <div class="container flex mx-auto">
                 <div class="flex">
@@ -27,31 +26,25 @@
                 <div class="relative lg:inline-flex bg-gray-100 rounded-xl mr-10">
                     <x-filter-dropdown>
                         <x-slot name="trigger">
-                            <button class="py-2 pl-3 pr-9 text-sm font-semibold w-full lg:w-32 text-left flex lg:inline-flex">
+                            <button class="pt-3 pl-3 pr-2 text-sm font-semibold w-full lg:w-32 text-left flex lg:inline-flex">
                                 {{ isset($currentRole) ? ucwords($currentRole->name) : 'Role' }}
-
                                 <x-icon name="down-arrow" class="absolute pointer-events-none" style="right: 12px;"/>
                             </button>
                         </x-slot>
 
                         <x-filter-dropdownItem
                             href="/admin/users?{{ http_build_query(request()->except('role', 'page')) }}"
-                            :active="request()->routeIs('home') && is_null(request()->getQueryString())"
-                        >
+                            :active="request()->routeIs('home') && is_null(request()->getQueryString())">
                             All
                         </x-filter-dropdownItem>
 
                         @foreach($roles as $role)
                             <x-filter-dropdownItem
                                 href="/admin/users?role={{$role->name}}&{{ http_build_query(request()->except('role', 'page')) }}"
-                                :active='request()->fullUrlIs("*?role={{$role->name}}*")'
-                            >
+                                :active='request()->fullUrlIs("*?role={{$role->name}}*")'>
                                 {{$role->name}}
                             </x-filter-dropdownItem>
                         @endforeach
-
-
-
                     </x-filter-dropdown>
                 </div>
             </div>
@@ -63,7 +56,7 @@
             </a>
         </header>
 
-        <table class="w-full">
+        <table class="w-full divide-y divide-gray-200" id="table">
             <thead class="bg-gray-100">
             <tr>
                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -86,18 +79,18 @@
             <tbody class="bg-white">
             @foreach($users as $user)
                 <tr>
-                    <td class="px-4 py-4">
+                    <td class="px-4 py-4 whitespace-nowrap">
                         <div class="text-sm text-gray-900">{{$user->name}}</div>
                     </td>
-                    <td class="px-4 py-4">
+                    <td class="px-4 py-4 whitespace-nowrap">
                         <div class="text-sm text-gray-900">{{$user->email}}</div>
                     </td>
 
-                    <td class="px-4 py-4">
+                    <td class="px-4 py-4 whitespace-nowrap">
                         <div class="text-sm text-gray-900">{{$user->role->name}}</div>
                     </td>
 
-                    <td class="px-4 py-4 text-right text-sm font-medium">
+                    <td class="px-4 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <a href="/admin/users/{{$user->id}}/edit" class="text-indigo-600 mr-5 hover:text-indigo-900">Edit</a>
                         <form method="POST" action="/admin/users/{{$user->id}}" class="text-red-600 hover:text-red-900 inline-block">
                             @csrf
@@ -115,5 +108,4 @@
             {{$users->links()}}
         </div>
     </section>
-</div>
 </x-admin-list>

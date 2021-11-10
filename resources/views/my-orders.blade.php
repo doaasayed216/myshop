@@ -1,17 +1,17 @@
 <x-bootstrap title="Orders">
     <x-nav />
     @auth
-    <div class="container p-12 mx-auto min-h-screen bg-gray-100">
-        <div class="flex-row w-full px-0 mx-auto md:flex-row">
-            <h1 class="w-1/2 mx-auto text-xl mb-5">Your Orders</h1>
-            @foreach(auth()->user()->orders as $order)
-                <div class="w-1/2 mx-auto mb-4 p-4 bg-white rounded-xl shadow-lg">
-                    <div class="flex flex-row  mb-5">
+    <div class="p-12 mx-auto min-h-screen bg-gray-100">
+        <div class="flex-row ml-5 w-full px-0 mx-auto md:flex-row">
+            <h1 class="lg:w-1/2 mx-auto text-xl mb-5">Your Orders</h1>
+            @foreach(auth()->user()->orders()->latest()->withTrashed()->get() as $order)
+                <div class="lg:w-1/2 mx-auto mb-4 p-5 bg-white rounded-xl shadow-lg">
+                    <div class="flex flex-row mb-5">
                         <div class="w-1/2 inline float-left">
                             <p><span class="font-semibold">Order placed on:</span> <time>{{($order->created_at)->format('F j, Y')}}</time></p>
                             <p><span class="font-semibold">Order ID:</span> {{'#' . $order->id}}</p>
-                            <p><span class="font-semibold">Order Status:</span>
-                                {{$order->delivered ? 'Delivered' : 'Ready for delivery'}}</p>
+                            <p class="{{$order->status == 'cancelled' ? 'text-red-500' : 'text-green-500'}}"><span class="font-semibold text-black">Order Status:</span>
+                                {{ucwords($order->status) ?? 'Ready for delivery'}}</p>
                         </div>
                         <div class="w-1/2 inline float-right">
                             <p><span class="font-semibold">Recipient:</span> {{$order->user->name}}</p>
@@ -28,13 +28,13 @@
                                 </div>
                                 <div class="flex flex-col justify-between ml-4 flex-grow">
                                     <p class="font-bold">{{$item->name}}</p>
-                                    <p class="text-red-500 font-semibold">{{'EGP '. $item->price}}</p>
+                                    <p class="font-semibold">{{'EGP '. $item->price}}</p>
                                     <p class="">{{'Quantity: '. $item->pivot->quantity}}</p>
                                 </div>
                             </div>
                         @endforeach
                     </div>
-                    @if(!$order->delivered)
+                    @if(!$order->status)
                         <div class="relative">
                             <form method="post" action="/order/{{$order->id}}" class="w-1/3 absolute bottom-0 right-0 bg-red-200 mx-auto">
                                 @csrf

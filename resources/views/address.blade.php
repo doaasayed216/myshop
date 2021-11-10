@@ -3,7 +3,30 @@
     @auth
     <div class="container p-12">
         <div class="flex flex-col w-full px-0 mx-auto md:flex-row">
-            <div class="w-3/4 flex flex-col md:w-full">
+            <div class="lg:flex flex-col lg:w-1/4 ml-0 lg:ml-12 lg:w-2/5">
+                @if(auth()->user()->addresses->count())
+                    <h1 class="text-xl font-bold px-12 mb-5">Select Shipping Address</h1>
+                    @foreach(auth()->user()->addresses as $address)
+                        <div class="pl-12 inline-block mb-8">
+                            <p class="font-semibold">{{auth()->user()->name}}</p>
+                            <p>{{$address->phone}}</p>
+                            <p>{{$address->details}}</p>
+                            <form method="post" action="/select/address">
+                                @csrf
+                                <input type="hidden" name="address" value="{{$address->id}}">
+                                <button class="p-2 bg-gray-400 hover:bg-gray-500 border rounded text-white mt-3 mb-3">Deliver to this address</button>
+                            </form>
+                            <form method="post" action="/addresses/{{$address->id}}">
+                                @csrf
+                                @method('delete')
+                                <a href="/addresses/{{$address->id}}/edit" class="text-blue-500 mr-5 font-semibold">Edit</a>
+                                <button class="text-red-500 font-semibold">Delete</button>
+                            </form>
+                        </div>
+                    @endforeach
+                @endif
+            </div>
+            <div class="w-full lg:w-3/4 flex flex-col md:w-full">
                 <h2 class="mb-4 font-bold md:text-xl text-heading ">Add New Address</h2>
                 <form class="justify-center w-full mx-auto" method="post" action="/addresses">
                     @csrf
@@ -30,29 +53,7 @@
                     </div>
                 </form>
             </div>
-            <div class="flex flex-col w-1/4 ml-0 lg:ml-12 lg:w-2/5">
-                @if(auth()->user()->addresses->count())
-                    <h1 class="text-xl font-bold px-12 mb-5">Select Shipping Address</h1>
-                    @foreach(auth()->user()->addresses as $address)
-                        <div class="pl-12 inline-block mb-8">
-                            <p class="font-semibold">{{auth()->user()->name}}</p>
-                            <p>{{$address->phone}}</p>
-                            <p>{{$address->details}}</p>
-                            <form method="post" action="/select/address">
-                                @csrf
-                                <input type="hidden" name="address" value="{{$address->id}}">
-                                <button class="p-2 bg-gray-400 hover:bg-gray-500 border rounded text-white mt-3 mb-3">Deliver to this address</button>
-                            </form>
-                            <form method="post" action="/addresses/{{$address->id}}">
-                                @csrf
-                                @method('delete')
-                                <a href="/addresses/{{$address->id}}/edit" class="text-blue-500 mr-5 font-semibold">Edit</a>
-                                <button class="text-red-500 font-semibold">Delete</button>
-                            </form>
-                        </div>
-                    @endforeach
-                @endif
-            </div>
+
         </div>
     </div>
     @endauth

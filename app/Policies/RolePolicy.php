@@ -10,22 +10,7 @@ class RolePolicy
 {
     use HandlesAuthorization;
 
-    public function viewAny(User $user)
-    {
-        return $user->role_id === Role::IS_ADMIN;
-    }
-
-    public function create(User $user)
-    {
-        return $user->role_id === Role::IS_ADMIN;
-    }
-
-    public function update(User $user, Role $role)
-    {
-        return $user->role_id === Role::IS_ADMIN;
-    }
-
-    public function delete(User $user, Role $role)
+    public function manage(User $user)
     {
         return $user->role_id === Role::IS_ADMIN;
     }

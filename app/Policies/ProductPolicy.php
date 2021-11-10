@@ -21,7 +21,6 @@ class ProductPolicy
         return in_array($user->role_id, [Role::IS_ADMIN, Role::IS_SELLER]);
     }
 
-
     public function update(User $user, Product $product)
     {
         return $user->role_id == Role::IS_ADMIN || $product->user_id == $user->id;

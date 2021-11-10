@@ -2,17 +2,19 @@
     <x-nav />
     @auth
     <div class="mt-10 pt-16">
-        <div class="w-1/2 container mx-auto flex-1 flex flex-col items-center justify-center px-2">
+        <div class="w-full lg:w-1/2 container mx-auto flex-1 flex flex-col items-center justify-center px-2">
             <div class="bg-white px-6 py-8 rounded shadow-md text-black w-full">
                 <h1 class="mb-8 text-3xl text-center">Secure payment info</h1>
                 <form method="post" action="/payment">
                     @csrf
                     <div class="mb-3">
-                        <input type="radio" name="cash" class="mt-3 mb-3"> Cash On Delivery
+                        <input type="radio" name="cash"  class="mt-3 mb-3"> Cash On Delivery
                     </div>
+                    @if(auth()->user()->payment)
                     <div class="mb-8">
-                        <input type="radio" name="existing_card" class="mt-3 mb-3"> Pay with your existing card
+                        <input type="radio" name="payment" value="{{auth()->user()->payment->id}}" class="mt-3 mb-3"> Pay with your existing card
                     </div>
+                    @endif
                     <x-form.error name="user_id" />
                     <input type="hidden" name="user_id" value="{{auth()->user()->id}}">
                     <div class="mb-3">

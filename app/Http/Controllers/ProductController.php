@@ -15,6 +15,7 @@ class ProductController extends Controller
     public function index()
     {
         $this->authorize('viewAny', Product::class);
+
         return view('admin.products.index', [
             'products' => request()->user()->role_id == Role::IS_ADMIN ?
                 Product::filter(request(['category', 'search', 'price']))->paginate(20) :
@@ -34,10 +35,12 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $this->authorize('create', Product::class);
+
         $attributes = array_merge($this->validateProduct($request), [
             'img_path' => $request->file('img_path')->store('products_images'),
             'user_id' => auth()->user()->id
         ]);
+
 
         $product = Product::create($attributes);
         $product->code = '#'. implode('', explode(' ', $product->name))  . $product->id . $product->category_id;
@@ -56,9 +59,7 @@ class ProductController extends Controller
     public function edit(Product $product)
     {
         $this->authorize('update', $product);
-        if(request()->user()->cannot('update', $product)) {
-            abort(403);
-        }
+
         return view('admin.products.edit', [
             'product' => $product,
             'categories' => Category::all()
@@ -68,6 +69,7 @@ class ProductController extends Controller
     public function update(Request $request, Product $product)
     {
         $this->authorize('update', $product);
+
         $attributes = array_merge($this->validateProduct($request, $product), [
             'user_id' => auth()->user()->id
         ]);
